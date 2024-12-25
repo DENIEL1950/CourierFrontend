@@ -1,25 +1,60 @@
 import React, { useState } from 'react';
 import imgRegister from '../assets/imgRegister.jpg'; // Importa la imagen de fondo
+import { registerUser } from '../services/api';
 
 const Register = () => {
-  const [nombre, setNombre] = useState("");
-  const [apellido, setApellido] = useState("");
-  const [pais, setPais] = useState("");
+  const [nombres, setNombres] = useState("");
+  const [apellidos, setApellidos] = useState("");
   const [cedula, setCedula] = useState("");
-  const [numeroTelefonico, setNumeroTelefonico] = useState("");
+  const [nombreUsuario, setNombreUsuario] = useState("");
   const [direccion, setDireccion] = useState("");
   const [codigoPostal, setCodigoPostal] = useState("");
+  const [telefono, setTelefono] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [pais, setPais] = useState("");
+  const [ciudad, setCiudad] = useState("");
+  const [provincia, setProvincia] = useState("");
+
 
   const [error, setError] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (nombre === "" || password === "") {
+    
+    // Validar que todos los campos estén llenos
+    if (!nombres || !apellidos || !cedula || !nombreUsuario || !direccion || 
+        !codigoPostal || !telefono || !password || !email || !pais || 
+        !ciudad || !provincia) {
       setError(true);
       return;
     }
-    // Aquí podrías agregar la lógica para registrar al usuario
+
+    try {
+      const userData = {
+        nombres,
+        apellidos,
+        cedula,
+        nombreUsuario,
+        direccion,
+        codigoPostal,
+        telefono,
+        password,
+        email,
+        pais,
+        ciudad,
+        provincia
+      };
+
+      console.log('Intentando enviar datos:', userData);
+      const response = await registerUser(userData);
+      console.log('Respuesta exitosa:', response);
+      alert('Usuario registrado con éxito!');
+      
+    } catch (error) {
+      console.log('Error detallado:', error.response || error);
+      alert('Error al registrar: ' + (error.response?.data?.message || error.message));
+    }
   };
 
   return (
@@ -29,16 +64,30 @@ const Register = () => {
         <form className="register" onSubmit={handleSubmit}>
           <input 
             type="text"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
-            placeholder="Nombre"
+            value={nombreUsuario}
+            onChange={(e) => setNombreUsuario(e.target.value)}
+            placeholder="Nombre de Usuario"
             style={styles.input}
           />
           <input 
             type="text"
-            value={apellido}
-            onChange={(e) => setApellido(e.target.value)}
-            placeholder="Apellido"
+            value={nombres}
+            onChange={(e) => setNombres(e.target.value)}
+            placeholder="Nombres "
+            style={styles.input}
+          />
+          <input 
+            type="text"
+            value={apellidos}
+            onChange={(e) => setApellidos(e.target.value)}
+            placeholder="Apellidos"
+            style={styles.input}
+          />
+          <input 
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Correo Electrónico"
             style={styles.input}
           />
           <input 
@@ -50,15 +99,29 @@ const Register = () => {
           />
           <input 
             type="text"
+            value={provincia}
+            onChange={(e) => setProvincia(e.target.value)}
+            placeholder="Provincia"
+            style={styles.input}
+          />
+          <input 
+            type="text"
+            value={ciudad}
+            onChange={(e) => setCiudad(e.target.value)}
+            placeholder="Ciudad"
+            style={styles.input}
+          />
+          <input 
+            type="text"
             value={cedula}
             onChange={(e) => setCedula(e.target.value)}
             placeholder="Cédula"
             style={styles.input}
           />
           <input 
-            type="text"
-            value={numeroTelefonico}
-            onChange={(e) => setNumeroTelefonico(e.target.value)}
+            type="tel"
+            value={telefono}
+            onChange={(e) => setTelefono(e.target.value)}
             placeholder="Número Telefónico"
             style={styles.input}
           />
@@ -83,6 +146,7 @@ const Register = () => {
             placeholder="Contraseña"
             style={styles.input}
           />
+          
           <button type="submit" style={styles.button}>Registrar</button>
         </form>
         {error && <p style={styles.errorText}>Todos los campos son obligatorios</p>}
